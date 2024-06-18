@@ -29,13 +29,20 @@ This project is a backend API developed with Python using Django and Django REST
 3. **Install dependencies**
     ```bash
     pip install -r requirements.txt
-4. **Apply database migrations**
+4. **Set up the .env file**
+  - Create a .env file in the root directory of your project.
+  - Add sensitive settings such as SECRET_KEY and DEBUG in the .env file:
+    ```bash
+    SECRET_KEY=your_secret_key_here
+    DEBUG=True  # Set to False in production
+
+5. **Apply database migrations**
     ```bash
     python manage.py migrate
-5. **Create a superuser for admin access**
+6. **Create a superuser for admin access**
     ```bash
     python manage.py createsuperuser
-6. **Run the development server**
+7. **Run the development server**
     ```bash
     Run the development server
 
