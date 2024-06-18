@@ -1,16 +1,16 @@
 from django.urls import path
 from .views import (
-    WriteMessageView,
-    GetAllMessagesForUserView,
-    GetUnreadMessagesForUserView,
-    ReadMessageView,
-    DeleteMessageView,
+    MessageCreateView,
+    SentMessagesListView,
+    ReceivedMessagesListView,
+    UnreadMessagesListView,
+    MessageDetailView
 )
 
 urlpatterns = [
-    path('write/', WriteMessageView.as_view(), name='write-message'),
-    path('', GetAllMessagesForUserView.as_view(), name='get-all-messages'),
-    path('unread/', GetUnreadMessagesForUserView.as_view(), name='get-unread-messages'),
-    path('<int:pk>/', ReadMessageView.as_view(), name='read-message'),
-    path('<int:pk>/delete/', DeleteMessageView.as_view(), name='delete-message'),
+    path('write/', MessageCreateView.as_view(), name='write-message'),
+    path('sent/', SentMessagesListView.as_view(), name='sent-messages'),
+    path('all/', ReceivedMessagesListView.as_view(), name='get-all-messages'),
+    path('unread/', UnreadMessagesListView.as_view(), name='get-unread-messages'),
+    path('<int:pk>/', MessageDetailView.as_view(), name='read-message'),
 ]

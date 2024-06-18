@@ -1,68 +1,121 @@
-from rest_framework import generics, status
+from rest_framework import generics, permissions, status
 from rest_framework.response import Response
-from rest_framework.decorators import authentication_classes, permission_classes
-from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
-from rest_framework.authentication import SessionAuthentication
-from .models import Message
-from .serializers import MessageSerializer
-from .permissions import IsReceiver
-from django.shortcuts import get_object_or_404
-from django.db.models import Q
+from django.contrib.auth.models import User
+from django.http import Http404
 
-class WriteMessageView(generics.CreateAPIView):
+from .models import Message, UserMessageStatus
+from .serializers import MessageSerializer, UserMessageStatusSerializer
+
+
+class MessageCreateView(generics.CreateAPIView):
+    """
+    API view to create a new message.
+    """
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
-    authentication_classes = [SessionAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
-        serializer.save(sender=self.request.user)
+        """
+        Associates the message with the currently authenticated user as the sender
+        and creates UserMessageStatus entries for the sender and receiver.
+        """
+        sender = self.request.user
+        message = serializer.save(sender=sender)
+        receiver = User.objects.get(username=serializer.validated_data['receiver'].username)
+        
+        # Create status for sender
+        UserMessageStatus.objects.create(user=sender, message=message, is_read=True)
 
-class GetAllMessagesForUserView(generics.ListAPIView):
-    serializer_class = MessageSerializer
-    authentication_classes = [SessionAuthentication]
-    permission_classes = [IsAuthenticated, IsReceiver]
+        # Create status for receiver
+        UserMessageStatus.objects.create(user=receiver, message=message)
+
+
+class SentMessagesListView(generics.ListAPIView):
+    """
+    API view to list all sent messages of the authenticated user.
+    """
+    serializer_class = UserMessageStatusSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Message.objects.filter(Q(receiver=self.request.user))
+        """
+        Returns sent messages by the authenticated user that are not deleted.
+        """
+        user = self.request.user
+        return UserMessageStatus.objects.filter(user=user, message__sender=user, is_deleted=False)
 
-class GetUnreadMessagesForUserView(generics.ListAPIView):
-    serializer_class = MessageSerializer
-    authentication_classes = [SessionAuthentication]
-    permission_classes = [IsAuthenticated, IsReceiver]
+
+class ReceivedMessagesListView(generics.ListAPIView):
+    """
+    API view to list all received messages of the authenticated user.
+    """
+    serializer_class = UserMessageStatusSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Message.objects.filter(receiver=self.request.user, is_read=False)
+        """
+        Returns received messages by the authenticated user that are not deleted.
+        """
+        user = self.request.user
+        return UserMessageStatus.objects.filter(user=user, message__receiver=user, is_deleted=False)
 
-class ReadMessageView(generics.RetrieveAPIView):
-    serializer_class = MessageSerializer
-    authentication_classes = [SessionAuthentication]
-    permission_classes = [IsAuthenticated, IsReceiver]
+
+class UnreadMessagesListView(generics.ListAPIView):
+    """
+    API view to list all unread messages of the authenticated user.
+    """
+    serializer_class = UserMessageStatusSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Message.objects.filter(Q(sender=self.request.user) | Q(receiver=self.request.user))
+        """
+        Returns unread messages for the authenticated user that are not deleted.
+        """
+        user = self.request.user
+        return UserMessageStatus.objects.filter(user=user, message__receiver=user, is_read=False, is_deleted=False)
+
+
+class MessageDetailView(generics.RetrieveDestroyAPIView):
+    """
+    API view to retrieve or delete a specific message.
+    """
+    queryset = Message.objects.all()
+    serializer_class = MessageSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
-        queryset = self.get_queryset()
-        obj = get_object_or_404(queryset, pk=self.kwargs['pk'])
-        # Mark message as read if the current user is the receiver
-        if self.request.user == obj.receiver:
-            obj.is_read = True
-            obj.save()
+        """
+        Retrieves the specific message instance.
+        """
+        obj = super().get_object()
+        user = self.request.user
+        try:
+            user_message_status = UserMessageStatus.objects.get(user=user, message=obj, is_deleted=False)
+        except UserMessageStatus.DoesNotExist:
+            raise Http404
+
+        if not user_message_status.is_read:
+            user_message_status.is_read = True
+            user_message_status.save()
+
         return obj
 
-class DeleteMessageView(generics.DestroyAPIView):
-    serializer_class = MessageSerializer
-    authentication_classes = [SessionAuthentication]
-    permission_classes = [IsAuthenticated, IsReceiver]
+    def perform_destroy(self, instance):
+        """
+        Marks the message as deleted for the authenticated user.
+        Deletes the UserMessageStatus entry if both users have marked it as deleted.
+        """
+        user = self.request.user
+        user_message_status = UserMessageStatus.objects.get(user=user, message=instance)
+        user_message_status.is_deleted = True
+        user_message_status.save()
 
-    def get_queryset(self):
-        return Message.objects.filter(Q(sender=self.request.user) | Q(receiver=self.request.user))
+        # Check if both sender and receiver have marked the message as deleted
+        sender_status = UserMessageStatus.objects.get(user=instance.sender, message=instance)
+        receiver_status = UserMessageStatus.objects.filter(message=instance).exclude(user=instance.sender).first()
 
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        if request.user == instance.sender or request.user == instance.receiver:
-            self.perform_destroy(instance)
-            return Response(status=status.HTTP_204_NO_CONTENT)
+        if sender_status.is_deleted and receiver_status.is_deleted:
+            instance.delete()
         else:
-            return Response(status=status.HTTP_403_FORBIDDEN)
+            return Response(status=status.HTTP_204_NO_CONTENT)
