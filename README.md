@@ -51,6 +51,51 @@ This project is a backend API developed with Python using Django and Django REST
 - Access the admin interface at http://localhost:8000/admin/ to manage users, messages, and user message statuses.
 
 ## Structure
+messagingsystem/
+│
+├── manage.py
+├── messagingsystem/
+│ ├── init.py
+│ ├── asgi.py
+│ ├── settings.py
+│ ├── urls.py
+│ └── wsgi.py
+│
+├── messaging/
+│ ├── init.py
+│ ├── admin.py
+│ ├── apps.py
+│ ├── models.py
+│ ├── serializers.py
+│ ├── views.py
+│ ├── urls.py
+│ └── migrations/
+│ └── init.py
+└── requirements.txt
+
+In this structure:
+
+- **messagingsystem/**: Root directory containing the main Django project files.
+  - **manage.py**: Django's command-line utility for administrative tasks.
+  - **messagingsystem/**: Django project directory.
+    - **__init__.py**: Python package initialization file.
+    - **asgi.py**: ASGI config for deploying as an asynchronous web application.
+    - **settings.py**: Django project settings and configurations.
+    - **urls.py**: URL declarations for the project.
+    - **wsgi.py**: WSGI config for deploying as a traditional web application.
+- **messaging/**: Django app directory for messaging functionality.
+  - **__init__.py**: Python package initialization file.
+  - **admin.py**: Django admin configurations for the app.
+  - **apps.py**: Django app configuration.
+  - **models.py**: Django models defining database structure (Message, UserMessageStatus).
+  - **serializers.py**: Django REST Framework serializers for API data serialization.
+  - **views.py**: Django views defining API endpoints (MessageCreateView, SentMessagesListView, etc.).
+  - **urls.py**: URL declarations for the app's API endpoints.
+  - **migrations/**: Directory containing database migrations.
+
+- **requirements.txt**: File listing Python dependencies required for the project.
+
+This structure gives an overview of how the project is organized, including the main project directory, app directory, and key files within each. Adjust the names and specific details to match your actual project structure if necessary.
 
 ### Models
 - **Message**: Represents a message with fields for sender, receiver, subject, message and creation date.
@@ -74,7 +119,7 @@ This project is a backend API developed with Python using Django and Django REST
 - Explore the API documentation using Swagger UI available at [http://localhost:8000/swagger/](http://localhost:8000/swagger/).
 
 ## References and Authors
-- Developed by Hadas Etion
+- Developed by Hadas Etzion
 - Third-party tools used: Django, Django REST Framework
 
 ## License
