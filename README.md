@@ -36,13 +36,13 @@ This project is a backend API developed with Python using Django and Django REST
     SECRET_KEY=your_secret_key_here
     DEBUG=True  # Set to False in production
 
-    # PostgreSQL settings:
+    # PostgreSQL settings (optional):
+    # if you're using PostgreSQL, make sure to modify the DATABASES setting in settings.py and use the code commented out
     DB_NAME=your_db_name
     DB_USER=your_db_user
     DB_PASSWORD=your_db_password
     DB_HOST=your_db_host
     DB_PORT=your_db_port
-  - Alternatively, for local development, you can use SQLite by modifying the DATABASES setting in settings.py and commenting out the PostgreSQL configuration.
 
 5. **Apply database migrations**
     ```bash
@@ -87,6 +87,7 @@ messagingsystem/
 │ ├── urls.py
 │ └── migrations/
 │ └── init.py
+├── documentaion.json
 └── requirements.txt
 ```
 
