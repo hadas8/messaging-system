@@ -1,7 +1,7 @@
 # Messaging System API
 
 ## Description
-This project is a backend API developed with Python using Django and Django REST Framework. It provides functionality for users to send, receive, and manage messages within a messaging system.
+This project is a backend API developed with Python using Django and Django REST Framework, using PostgreSQL for the database. It provides functionality for users to send, receive, and manage messages within a messaging system.
 
 ## Table of Contents
 - [Setup and Installation](#setup-and-installation)
@@ -15,7 +15,7 @@ This project is a backend API developed with Python using Django and Django REST
 ### Prerequisites
 - Python 3.x installed on your system.
 - Pip package manager.
-- Virtual environment tool (venv) for Python.
+- PostgreSQL installed and running (optional)
 
 ### Installation Steps
 1. **Clone the repository**
@@ -35,6 +35,14 @@ This project is a backend API developed with Python using Django and Django REST
     ```bash
     SECRET_KEY=your_secret_key_here
     DEBUG=True  # Set to False in production
+
+    # PostgreSQL settings:
+    DB_NAME=your_db_name
+    DB_USER=your_db_user
+    DB_PASSWORD=your_db_password
+    DB_HOST=your_db_host
+    DB_PORT=your_db_port
+  - Alternatively, for local development, you can use SQLite by modifying the DATABASES setting in settings.py and commenting out the PostgreSQL configuration.
 
 5. **Apply database migrations**
     ```bash
@@ -127,7 +135,7 @@ This structure gives an overview of how the project is organized, including the 
 
 ## References and Authors
 - Developed by Hadas Etzion
-- Third-party tools used: Django, Django REST Framework
+- Third-party tools used: Django, Django REST Framework, PostgreSQL, Python-Decouple
 
 ## License
 This project is licensed under the MIT License.
