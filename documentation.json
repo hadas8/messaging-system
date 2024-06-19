@@ -1,0 +1,247 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "title": "Messaging System API",
+      "description": "Test description",
+      "termsOfService": "https://www.google.com/policies/terms/",
+      "contact": {
+        "email": "contact@snippets.local"
+      },
+      "license": {
+        "name": "BSD License"
+      },
+      "version": "v1"
+    },
+    "host": "localhost:8000",
+    "schemes": [
+      "http"
+    ],
+    "basePath": "/api",
+    "consumes": [
+      "application/json"
+    ],
+    "produces": [
+      "application/json"
+    ],
+    "securityDefinitions": {
+      "Basic": {
+        "type": "basic"
+      }
+    },
+    "security": [
+      {
+        "Basic": []
+      }
+    ],
+    "paths": {
+      "/messages/all/": {
+        "get": {
+          "operationId": "messages_all_list",
+          "description": "API view to list all received messages of the authenticated user.",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/UserMessageStatus"
+                }
+              }
+            }
+          },
+          "tags": [
+            "messages"
+          ]
+        },
+        "parameters": []
+      },
+      "/messages/sent/": {
+        "get": {
+          "operationId": "messages_sent_list",
+          "description": "API view to list all sent messages of the authenticated user.",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/UserMessageStatus"
+                }
+              }
+            }
+          },
+          "tags": [
+            "messages"
+          ]
+        },
+        "parameters": []
+      },
+      "/messages/unread/": {
+        "get": {
+          "operationId": "messages_unread_list",
+          "description": "API view to list all unread messages of the authenticated user.",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/UserMessageStatus"
+                }
+              }
+            }
+          },
+          "tags": [
+            "messages"
+          ]
+        },
+        "parameters": []
+      },
+      "/messages/write/": {
+        "post": {
+          "operationId": "messages_write_create",
+          "description": "API view to create a new message.",
+          "parameters": [
+            {
+              "name": "data",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Message"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "",
+              "schema": {
+                "$ref": "#/definitions/Message"
+              }
+            }
+          },
+          "tags": [
+            "messages"
+          ]
+        },
+        "parameters": []
+      },
+      "/messages/{id}/": {
+        "get": {
+          "operationId": "messages_read",
+          "description": "API view to retrieve or delete a specific message.",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "",
+              "schema": {
+                "$ref": "#/definitions/Message"
+              }
+            }
+          },
+          "tags": [
+            "messages"
+          ]
+        },
+        "delete": {
+          "operationId": "messages_delete",
+          "description": "API view to retrieve or delete a specific message.",
+          "parameters": [],
+          "responses": {
+            "204": {
+              "description": ""
+            }
+          },
+          "tags": [
+            "messages"
+          ]
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "A unique integer value identifying this message.",
+            "required": true,
+            "type": "integer"
+          }
+        ]
+      }
+    },
+    "definitions": {
+      "Message": {
+        "required": [
+          "receiver",
+          "subject",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "ID",
+            "type": "integer",
+            "readOnly": true
+          },
+          "sender": {
+            "title": "Sender",
+            "type": "string",
+            "readOnly": true
+          },
+          "receiver": {
+            "title": "Receiver",
+            "type": "string",
+            "pattern": "^[\\w.@+-]+$"
+          },
+          "subject": {
+            "title": "Subject",
+            "description": "Enter the subject of the message.",
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1
+          },
+          "message": {
+            "title": "Message",
+            "description": "Enter the content of the message.",
+            "type": "string",
+            "minLength": 1
+          },
+          "creation_date": {
+            "title": "Creation date",
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          }
+        }
+      },
+      "UserMessageStatus": {
+        "required": [
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "ID",
+            "type": "integer",
+            "readOnly": true
+          },
+          "user": {
+            "title": "User",
+            "type": "string",
+            "readOnly": true
+          },
+          "message": {
+            "$ref": "#/definitions/Message"
+          },
+          "is_read": {
+            "title": "Is read",
+            "type": "boolean"
+          },
+          "is_deleted": {
+            "title": "Is deleted",
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
