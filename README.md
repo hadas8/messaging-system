@@ -66,6 +66,7 @@ This project is a backend API developed with Python using Django and Django REST
 - Access the admin interface at http://localhost:8000/admin/ to manage users, messages, and user message statuses.
 
 ## Structure
+```
 messagingsystem/
 │
 ├── manage.py
@@ -87,6 +88,7 @@ messagingsystem/
 │ └── migrations/
 │ └── init.py
 └── requirements.txt
+```
 
 In this structure:
 
@@ -131,7 +133,8 @@ This structure gives an overview of how the project is organized, including the 
 - Endpoint URLs are defined in `urls.py` for message creation, message lists, message details, and message deletion.
 
 ## API Documentation
-- Explore the API documentation using Swagger UI available at [http://localhost:8000/swagger/](http://localhost:8000/swagger/).
+- Explore the API documentation using the Swagger documentation file documentation.json
+- It can be easily viewd in any online Swagger editor such as: https://editor.swagger.io/
 
 ## References and Authors
 - Developed by Hadas Etzion
