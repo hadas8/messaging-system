@@ -31,7 +31,6 @@ schema_view = views.get_schema_view(
    ),
    public=True,
    permission_classes=(permissions.AllowAny,),
-   # authentication_classes=[]
 )
 
 urlpatterns = [
