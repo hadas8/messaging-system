@@ -20,7 +20,7 @@ This project is a backend API developed with Python using Django and Django REST
 ### Installation Steps
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/hadas8/messaging-system.git
+   git clone https://github.com/hadas8/messaging-system
    cd messaging-system-api
 2. **Create and activate a virtual environment**
    ```bash 
